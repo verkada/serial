@@ -159,6 +159,14 @@ func (p *Port) Flush() error {
 	return errno
 }
 
+func (p *Port) Drain() error {
+	var attr unix.Termios
+	if err := unix.IoctlSetTermios(int(p.f.Fd()), unix.TCGETS, &attr); err != nil {
+		return err
+	}
+	return unix.IoctlSetTermios(int(p.f.Fd()), uint(unix.TCSETSW), &attr)
+}
+
 func (p *Port) Close() (err error) {
 	return p.f.Close()
 }
